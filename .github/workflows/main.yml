@@ -28,6 +28,9 @@ jobs:
           chmod 600 ~/.ssh/terraform-do
           echo '${{ secrets.PUBLIC_KEY }}' >> ~/.ssh/terraform-do.pub
 
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
       - name: Terraform Init
         run: terraform init -backend-config="conn_str=${{ secrets.PG_CONN_STR }}"
         
