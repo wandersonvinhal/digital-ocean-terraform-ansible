@@ -13,7 +13,7 @@ terraform {
 #}
 
 resource "digitalocean_droplet" "vm_web" {
-  image    = "ubuntu-20-04-x64"
+  image    = "ubuntu-25-04-x64"
   name     = "${var.vm_name}-${count.index + 1}"
   region   = var.region
   size     = var.size
