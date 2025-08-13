@@ -8,9 +8,9 @@ terraform {
   }
 }
 
-terraform {
-  backend "pg" {}
-}
+#terraform {
+#  backend "pg" {}
+#}
 
 resource "digitalocean_droplet" "vm_web" {
   image    = "ubuntu-20-04-x64"
