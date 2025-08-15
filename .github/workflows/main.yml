@@ -3,6 +3,10 @@ name: Criação de Infra na Digital Ocean
 on:
   workflow_dispatch:
     inputs:
+      workspace:
+        description: "Escolha o workspace (dev/staging/prod)"
+        required: true
+        default: "dev"
       destroy_infra:
         description: "Deseja destruir a infraestrutura? (true/false)"
         required: true
@@ -20,6 +24,7 @@ jobs:
   deploy_iaac:
     runs-on: ubuntu-latest
     env:
+      WORKSPACE: ${{ github.event.inputs.workspace }}
       DESTROY_INFRA: ${{ github.event.inputs.destroy_infra }}
       VMS_COUNT: ${{ github.event.inputs.vms_count }}
       REGION: ${{ github.event.inputs.region }}
@@ -46,6 +51,10 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+
+      - name: Selecionar ou criar Workspace
+        run: |
+          terraform workspace select ${WORKSPACE} || terraform workspace new ${WORKSPACE}
         
       - name: Terraform Validate
         run: terraform validate
