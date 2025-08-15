@@ -1,5 +1,13 @@
 terraform {
-  required_version = "~> 1.0"
+  cloud {
+    organization = "wanderson-org"  # <- sua org
+
+    workspaces {
+      name = "digitalocean-infra"   # <- seu workspace
+    }
+  }
+
+  required_version = ">= 1.5.0"
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
@@ -7,10 +15,6 @@ terraform {
     }
   }
 }
-
-#terraform {
-#  backend "pg" {}
-#}
 
 resource "digitalocean_droplet" "vm_web" {
   image    = "ubuntu-25-04-x64"
