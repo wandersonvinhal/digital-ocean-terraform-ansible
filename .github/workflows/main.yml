@@ -2,18 +2,22 @@ name: Criação de Infra na Digital Ocean
 
 on:
   workflow_dispatch:
+    inputs:
+      destroy_infra:
+        description: "Deseja destruir a infraestrutura? (true/false)"
+        required: true
+        default: "false"
 
 jobs:
   deploy_iaac:
     runs-on: ubuntu-latest
     env:
-      DESTROY_INFRA: ${{ vars.DESTROY_INFRA }}
+      DESTROY_INFRA: ${{ github.event.inputs.destroy_infra }}
     steps:
       - name: Validando variável DESTROY_INFRA
         if: ${{ env.DESTROY_INFRA != 'true' && env.DESTROY_INFRA != 'false' }}
         run: |
           echo "A variável deve conter o valor true ou false"
-          echo "Setar o valor em 'Actions secrets and variables'"
           exit 1
           
       - name: Download dos artefatos
@@ -31,8 +35,7 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
       - name: Terraform Init
-        #run: terraform init -backend-config="conn_str=${{ secrets.PG_CONN_STR }}"
-        run: ls -ltr; terraform init
+        run: terraform init
         
       - name: Terraform Validate
         run: terraform validate
@@ -41,7 +44,7 @@ jobs:
         run: |
           if [ "${{ env.DESTROY_INFRA }}" != "true" ]; then
             terraform apply --auto-approve -var do_token=${{ secrets.DO_TOKEN }}
-          elif [ "${{ env.DESTROY_INFRA }}" == "true" ]; then
+          else
             terraform destroy --auto-approve -var do_token=${{ secrets.DO_TOKEN }}
           fi
           
