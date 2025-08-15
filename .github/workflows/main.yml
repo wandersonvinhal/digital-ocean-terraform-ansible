@@ -53,9 +53,8 @@ jobs:
         run: terraform init
 
       - name: Selecionar ou criar Workspace
-        run: |
-          terraform workspace select ${WORKSPACE} || terraform workspace new ${WORKSPACE}
-        
+        run: terraform workspace select -or-create ${WORKSPACE}
+ 
       - name: Terraform Validate
         run: terraform validate
         
