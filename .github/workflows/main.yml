@@ -7,12 +7,22 @@ on:
         description: "Deseja destruir a infraestrutura? (true/false)"
         required: true
         default: "false"
+      vms_count:
+        description: "Número de VMs a criar"
+        required: true
+        default: "2"
+      region:
+        description: "Região para criar as VMs"
+        required: true
+        default: "nyc1"
 
 jobs:
   deploy_iaac:
     runs-on: ubuntu-latest
     env:
       DESTROY_INFRA: ${{ github.event.inputs.destroy_infra }}
+      VMS_COUNT: ${{ github.event.inputs.vms_count }}
+      REGION: ${{ github.event.inputs.region }}
     steps:
       - name: Validando variável DESTROY_INFRA
         if: ${{ env.DESTROY_INFRA != 'true' && env.DESTROY_INFRA != 'false' }}
@@ -43,9 +53,15 @@ jobs:
       - name: Terraform Apply/Destroy
         run: |
           if [ "${{ env.DESTROY_INFRA }}" != "true" ]; then
-            terraform apply --auto-approve -var do_token=${{ secrets.DO_TOKEN }}
+            terraform apply --auto-approve \
+              -var "do_token=${{ secrets.DO_TOKEN }}" \
+              -var "vms_count=${VMS_COUNT}" \
+              -var "region=${REGION}"
           else
-            terraform destroy --auto-approve -var do_token=${{ secrets.DO_TOKEN }}
+            terraform destroy --auto-approve \
+              -var "do_token=${{ secrets.DO_TOKEN }}" \
+              -var "vms_count=${VMS_COUNT}" \
+              -var "region=${REGION}"
           fi
           
       - name: Configuração do arquivo ansible.cfg
